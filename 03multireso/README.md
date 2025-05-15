@@ -21,7 +21,7 @@ Please cite database and this paper if you use:
 
 
 
-
+>conda activate PSenv
 
 [TOC]
 
@@ -80,6 +80,10 @@ Please cite database and this paper if you use:
 
 ## Usuage
 
+```
+conda activate PSenv
+```
+
 1. env
    * modify the `CON_DATA_PATH` in the line 27 of `PartialSpoof/config_ps/config\*py` to your path.
 
@@ -112,7 +116,13 @@ Please cite database and this paper if you use:
         done
         ```
         
-        
+        My windows
+        ```
+        @echo off
+        for %%s in (1 2 3) do (
+            call 01_multiseed.bat %%s
+        )
+        ```
         
    * For single-reso.
      
