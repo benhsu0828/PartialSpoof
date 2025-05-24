@@ -24,7 +24,7 @@ val_set_name = 'PS_val'
 
 # for convenience
 
-CON_DATA_PATH = '/home/smg/zhanglin/workspace/PROJ/Public/PartialSpoof/database/'
+CON_DATA_PATH = '/home/ben/PartialSpoof/database/'
 #CON_DATA_PATH = '/path/to/data' TODO
 
 # File lists (text file, one data name per line, without name extension)

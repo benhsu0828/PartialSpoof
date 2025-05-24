@@ -34,6 +34,28 @@ Please cite database and this paper if you use:
   
   `ln -s <path_to_s3prl> ../modules/s3prl`
   
+  ```
+  pip install --upgrade pip==21.3.1
+  pip install omegaconf==2.0.6 hydra-core==1.0.7
+  pip install fairseq==0.12.2
+  pip install tensorboard
+
+  # 安裝特定版本的 numpy
+  pip install "numpy==1.20.0"
+
+  # 安裝相容版本的 Pillow
+  pip install "Pillow==8.2.0"
+
+  # 安裝相容版本的 transformers
+  pip install "transformers==4.18.0"
+
+  pip install "numpy==1.20.3"
+
+  # pip install pyRLE
+  pip install pylibjpeg-rle
+  ```
+
+
   * Option 2. Otherwise, please download s3prl through submodule. 
   
   ```shell

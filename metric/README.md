@@ -19,7 +19,9 @@ We recommand to use **Utterance EER** for spoof detection and **RangeEER** for l
 1. Install [pyannote](https://github.com/pyannote/pyannote-metrics)
 
 ```shell
-pip install pyannote.metric
+#只要這個就好
+pip install pyannote.metrics
+
 pip install pyannote.core
 pip install pyannote.database
 ```
@@ -56,6 +58,7 @@ Below are instruction for each type of EER within `cal_EER.sh`
 
 ```shell
 bash <Path_to_PartialSpoof>/metric/cal_EER.sh multi-reso/exp-01 UttEER dev
+bash /home/ben/PartialSpoof/metric/cal_EER.sh /home/ben/PartialSpoof/03multireso/multi-reso/01 UttEER dev
 # Input is multi-reso/exp-01/log_output_dev, which has utt scores from all score branshes: [S_1, ..., S_K] as in model.py:573
 # Output all EER and threshold vectors
 # For example [EER_1, ..., EER_k, ..., EER_K, EER_{utt}], where EER_m is the k-th score branch.
@@ -78,6 +81,7 @@ But I personally do not recommend using t-DCF, because Partial Spoof is designed
 
 ```shell
 bash <Path_to_PartialSpoof>/metric/cal_EER.sh multi-reso/exp-01 RangeEER dev 64
+bash /home/ben/PartialSpoof/metric/cal_EER.sh /home/ben/PartialSpoof/03multireso/multi-reso/01 RangeEER dev 64
 # Outputed values will be saved to ${RES_DIR}/ set by RangeEER.py:242, 277
 # and will print out those value real-time, each row has below format:
 # [[threshold, fpr, fnr, abs(fpr-fnr)]]
@@ -112,6 +116,7 @@ The `cal_EER.sh` script can be used as follows to calculate SegmentEER for the '
 
 ```shell
 bash <Path_to_PartialSpoof>/metric/cal_EER.sh multi-reso SegEER dev
+bash /home/ben/PartialSpoof/metric/cal_EER.sh /home/ben/PartialSpoof/03multireso/multi-reso/01 SegEER dev
 # Save detailed results into ${pred_DIR}/Loc_SegEER/${dset}.npz
 # Output the following:
 # loading ${model_dir}/${sub_dir}/output/dev_score_ali_64_xxx.pkl

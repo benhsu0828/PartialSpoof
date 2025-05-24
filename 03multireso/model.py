@@ -37,7 +37,7 @@ device = 'cuda'
 ##############
 ## util
 ##############
-PS_PATH="/home/smg/zhanglin/workspace/PROJ/Public/CODE/PartialSpoof" #path to PartialSpoof
+PS_PATH="/home/ben/PartialSpoof" #path to PartialSpoof
 
 Scale_num=7   
 SSL_shift=1   ##since SSL use 20ms as frame shift, we start from 1. and 0 is for 10 ms...
