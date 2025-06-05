@@ -60,11 +60,11 @@ def parse_txt(file_path, col):
 
     #####
     # 加入除錯資訊
-    print(f"\nDEBUG Col {col}:")
-    print(f"  Bonafide count: {len(bonafide)}, Spoof count: {len(spoofed)}")
-    print(f"  Bonafide: min={bonafide.min():.4f}, max={bonafide.max():.4f}, mean={bonafide.mean():.4f}")
-    print(f"  Spoof: min={spoofed.min():.4f}, max={spoofed.max():.4f}, mean={spoofed.mean():.4f}")
-    print(f"  Expected: bonafide > spoof for good performance")
+    # print(f"\nDEBUG Col {col}:")
+    # print(f"  Bonafide count: {len(bonafide)}, Spoof count: {len(spoofed)}")
+    # print(f"  Bonafide: min={bonafide.min():.4f}, max={bonafide.max():.4f}, mean={bonafide.mean():.4f}")
+    # print(f"  Spoof: min={spoofed.min():.4f}, max={spoofed.max():.4f}, mean={spoofed.mean():.4f}")
+    # print(f"  Expected: bonafide > spoof for good performance")
     if bonafide.mean() < spoofed.mean():
         print(f"  ⚠️  WARNING: Bonafide scores < Spoof scores (may need to flip)")
     #####
@@ -77,37 +77,6 @@ if __name__ == "__main__":
 
     # print(f"DEBUG: Reading ASV file: {args.asv_score_file}")
 
-    trials=pd.read_csv(args.asv_score_file, on_bad_lines='skip',
-            sep='\s+',index_col =False, header=None,
-            names=['type', 'label', 'score'])
-    
-    # 自動映射常見的類型名稱
-    # type_mapping = {
-    #     'A01': 'spoof',
-    #     'A02': 'spoof',
-    #     'A03': 'spoof',
-    #     'A04': 'spoof',
-    #     'A05': 'spoof',
-    #     'A06': 'spoof',
-    # }
-    # label_mapping = {
-    #     'bonafide': 'bonafide',
-    #     'target': 'target',
-    #     'nontarget': 'nontarget',
-    #     'spoof': 'target',  # 將 'spoof' 映射為 'target'
-    # }
-    # 應用映射
-    # trials['type'] = trials['type'].replace(type_mapping)
-    # trials['label'] = trials['label'].replace(label_mapping)
-    print(f"DEBUG: Total ASV records: {len(trials)}")
-    print(f"DEBUG: Unique types: {trials['type'].unique()}")
-    print(f"DEBUG: Unique labels: {trials['label'].unique()}")
-
-    tar_asv = np.array(trials.loc[trials['label']=='target']['score'], dtype=float)
-    non_asv = np.array(trials.loc[(trials['label']=='nontarget')&(trials['type']=='bonafide')]['score'], dtype=float)
-    spoof_asv_pd=trials.loc[(trials['label']=='nontarget')&(trials['type']=='spoof')]
-    spoof_asv = np.array(spoof_asv_pd['score'], dtype=float)
-
     print(args.pred_file)
     mintDCF_oneseed_cols = []
     eer_oneseed_cols = []
@@ -115,8 +84,7 @@ if __name__ == "__main__":
 
     for col in np.arange(3, MAX_col):
         bonafide, spoofed = parse_txt(args.pred_file, col)
-        
-        # mintDCF, eer, threshold = eval_asvspoof.tDCF_wrapper(bonafide, spoofed, tar_asv, non_asv, spoof_asv)
+
         # 只計算 EER
         eer, threshold = eval_asvspoof.compute_eer(bonafide, spoofed)
         mintDCF = 0.0  # 設定為預設值

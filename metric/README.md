@@ -53,7 +53,6 @@ bash <Path_to_PartialSpoof>/metric/cal_EER.sh <pred_DIR> UttEER <dset> <scale>
 Below are instruction for each type of EER within `cal_EER.sh`
 
 
-
 ### Utterance EER (Spoof detection)
 
 ```shell
@@ -75,7 +74,11 @@ python ${PS_PATH}/metric/UtteranceEER.py \
 * `--asv_score_file` point to the asv score, which is used to calculate min-tdcf.
 But I personally do not recommend using t-DCF, because Partial Spoof is designed not only for ASVspoof, which aims to deceive machines, but also for DeepFake, which is intended to fool humans.
 
+# 19LA EER
+bash /home/ben/PartialSpoof/metric/cal_EER.sh /home/ben/PartialSpoof/03multireso/multi-reso/04_19LA 19UttEER dev
 
+# ASVspoof 5 EER
+bash /home/ben/PartialSpoof/metric/cal_EER.sh /home/ben/PartialSpoof/03multireso/multi-reso/05_ASV5 5UttEER dev
 
 ### Range-based EER (for spoof localization)
 

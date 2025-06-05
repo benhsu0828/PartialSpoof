@@ -54,6 +54,30 @@ Please cite database and this paper if you use:
   # pip install pyRLE
   pip install pylibjpeg-rle
   ```
+  # 將訓練資料匯出成.lst
+  find /home/ben/PartialSpoof/database/ASVspoof5/flac_D -name "*.flac" -exec basename {} .flac \; > /home/ben/PartialSpoof/database/ASVspoof5/ASVspoof5_dev.lst
+
+  將ASVspoof 19 LA轉換成.wav檔
+  # 建立輸出目錄
+  mkdir -p /home/ben/PartialSpoof/database/ASVspoof2019_LA_dev/wav
+  mkdir -p /home/ben/PartialSpoof/database/ASVspoof2019_LA_eval/wav
+
+  # 執行轉換 (使用 sox)
+  find /home/ben/PartialSpoof/database/ASVspoof2019_LA_dev/flac -name "*.flac" -exec sh -c '
+      BASENAME=$(basename "$1" .flac)
+      sox "$1" -r 16000 -c 1 "/home/ben/PartialSpoof/database/ASVspoof2019_LA_dev/wav/$BASENAME.wav"
+  ' _ {} \;
+
+  find /home/ben/PartialSpoof/database/ASVspoof2019_LA_eval/flac -name "*.flac" -exec sh -c '
+      BASENAME=$(basename "$1" .flac)
+      sox "$1" -r 16000 -c 1 "/home/ben/PartialSpoof/database/ASVspoof2019_LA_eval/wav/$BASENAME.wav"
+  ' _ {} \;
+
+  # 如果要test on ASVspoof5 要先將dev和eval的 protocol 合併起來再更改model檔給定的路徑
+  直接ctrl c ctrl v貼再一起就好
+
+
+
 
 
   * Option 2. Otherwise, please download s3prl through submodule. 
