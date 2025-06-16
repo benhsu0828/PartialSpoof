@@ -1,4 +1,4 @@
-# PartialSpoof/03multireso
+s# PartialSpoof/03multireso
 
 This is the implementation for paper:
 
@@ -55,28 +55,18 @@ Please cite database and this paper if you use:
   pip install pylibjpeg-rle
   ```
   # 將訓練資料匯出成.lst
-  find /home/ben/PartialSpoof/database/ASVspoof5/flac_D -name "*.flac" -exec basename {} .flac \; > /home/ben/PartialSpoof/database/ASVspoof5/ASVspoof5_dev.lst
-
-  將ASVspoof 19 LA轉換成.wav檔
-  # 建立輸出目錄
-  mkdir -p /home/ben/PartialSpoof/database/ASVspoof2019_LA_dev/wav
-  mkdir -p /home/ben/PartialSpoof/database/ASVspoof2019_LA_eval/wav
-
-  # 執行轉換 (使用 sox)
-  find /home/ben/PartialSpoof/database/ASVspoof2019_LA_dev/flac -name "*.flac" -exec sh -c '
-      BASENAME=$(basename "$1" .flac)
-      sox "$1" -r 16000 -c 1 "/home/ben/PartialSpoof/database/ASVspoof2019_LA_dev/wav/$BASENAME.wav"
-  ' _ {} \;
-
-  find /home/ben/PartialSpoof/database/ASVspoof2019_LA_eval/flac -name "*.flac" -exec sh -c '
-      BASENAME=$(basename "$1" .flac)
-      sox "$1" -r 16000 -c 1 "/home/ben/PartialSpoof/database/ASVspoof2019_LA_eval/wav/$BASENAME.wav"
-  ' _ {} \;
-
+  find /home/ben/PartialSpoof/database/ASVspoof5/ASVspoof5_train/flac_T -name "*.flac" -exec basename {} .flac \; > /home/ben/PartialSpoof/database/ASVspoof5/ASVspoof5_train/ASVspoof5_train.lst
+ 
   # 如果要test on ASVspoof5 要先將dev和eval的 protocol 合併起來再更改model檔給定的路徑
   直接ctrl c ctrl v貼再一起就好
 
+  mkdir -p flac_T
 
+  # 解壓縮所有 .tar.gz 檔案到 flac_T
+  for file in *.tar*; do
+      echo "正在解壓縮: $file"
+      tar -xaf "$file" -C flac_D/ --strip-components=1
+  done
 
 
 

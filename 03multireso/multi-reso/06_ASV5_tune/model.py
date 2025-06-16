@@ -49,8 +49,8 @@ Frame_shifts_list= [pow(2, i) for i in np.arange(Scale_num)][SSL_shift:]
 LABEL_SCALE = 1
 Multi_scales=Frame_shifts * Base_step #[0.01, 0.02, 0.04, 0.08, 0.16]
 
-# ASVSPOOF_PROTOCAL=PS_PATH+'/project-NN-Pytorch-scripts.202102/project/02-asvspoof/DATA/asvspoof2019_LA/protocol.txt' #protocal of asvspoof2019
-ASVSPOOF_PROTOCAL=PS_PATH+'/database/protocols/ASV19LA_Alltest_processed.txt' #protocal of asvspoof2019
+ASVSPOOF_PROTOCAL=PS_PATH+'/database/ASVspoof5/ASVspoof5_protocols/ASVspoof5_test_EER.lst'
+# ASVSPOOF_PROTOCAL=PS_PATH+'/database/ASVspoof5/ASVspoof5_protocols/ASVspoof5_train.lst' #train protocal of asvspoof 5
 
 hidd_dims ={'wav2vec':512, 'wav2vec2':768, 'hubert':768, 'wav2vec2_xlsr':1024, 'wavlm_base_plus':768, 'wav2vec2_local':1024}
 ssl_model='wav2vec2_local'
@@ -304,15 +304,22 @@ class Model(torch_nn.Module):
         -------
           x_reps: front-end featues, (batch, frame_num, frame_feat_dim)
         """
+        """ 優化版本的 front-end """
         x = [i for i in wav.squeeze(2)]
-         
+        
         if(self.ssl_finetune):
             x_reps = self.extracter(x)["hidden_states"]
+            feature = self._weighted_sum(x_reps)
+            # 立即清理中間結果
+            del x_reps
+            torch.cuda.empty_cache()
         else:
             with torch.no_grad():
                 x_reps = self.extracter(x)["hidden_states"]
-
-        feature = self._weighted_sum(x_reps)
+                feature = self._weighted_sum(x_reps)
+                # 立即清理中間結果
+                del x_reps
+                torch.cuda.empty_cache()
 
         return feature
 
@@ -323,39 +330,6 @@ class Model(torch_nn.Module):
         """
         batch_size = x.shape[0]
         
-        # # 檢查輸入長度並進行填充
-        # min_required_frames = 256
-        # min_required_samples = min_required_frames * 320  # 320 = 20ms * 16kHz
-        
-        # # 檢查是否有短音訊需要填充
-        # max_length = max(max(datalength), min_required_samples)
-        # need_padding = any(length < min_required_samples for length in datalength)
-        
-        # if need_padding:
-        #     # print(f"Warning: Short audio detected, applying padding")
-        #     # print(f"Original lengths: {datalength}")
-            
-        #     # 創建新的填充後張量
-        #     if len(x.shape) == 3:  # [batch, length, dim]
-        #         padded_x = torch.zeros(batch_size, max_length, x.shape[2], 
-        #                             device=x.device, dtype=x.dtype)
-        #     else:  # [batch, length]
-        #         padded_x = torch.zeros(batch_size, max_length, 
-        #                             device=x.device, dtype=x.dtype)
-            
-        #     # 複製原始資料到填充後的張量
-        #     for i in range(batch_size):
-        #         original_length = min(datalength[i], x.shape[1])
-        #         if len(x.shape) == 3:
-        #             padded_x[i, :original_length, :] = x[i, :original_length, :]
-        #         else:
-        #             padded_x[i, :original_length] = x[i, :original_length]
-        #         datalength[i] = max_length
-            
-        #     x = padded_x
-        #     # print(f"After padding lengths: {datalength}")
-
-        # # 繼續原本的處理...
         for idx, (fs, fl, fn, trunc_len, m_trans) in enumerate(
             zip(self.frame_hops, self.frame_lens, self.fft_n, 
                 self.v_truncate_lens, self.m_transform)):
@@ -524,7 +498,7 @@ class Model(torch_nn.Module):
         filenames = [nii_seq_tk.parse_filename(y) for y in fileinfo]
         datalength = [nii_seq_tk.parse_length(y) for y in fileinfo]
         batch_size=len(filenames)
-        if self.training:
+        if self.training or dev_flag: # 訓練或驗證階段
             
             outs = self._compute_embedding(x, datalength, filenames) 
             #[seg1, seg2, ..., utt] [B x T x emb_d, B x T/2xd,...,B x emb_d ]
@@ -534,7 +508,14 @@ class Model(torch_nn.Module):
             utt_scores = self._compute_score(feature_vec)
 
             # target
-            target = self._get_con_target(filenames, dev_flag)
+            # target = self._get_con_target(filenames, dev_flag)
+
+            # 根據 data_type 選擇正確的目標函數
+            if(self.data_type == 'asvspoof'):
+                target = self._get_target(filenames)  # 使用 ASVSpoof 目標函數
+            else:
+                target = self._get_con_target(filenames, dev_flag)  # 使用 PartialSpoof 目標函數
+
             target_vec = torch.tensor(target, 
                                       device=x.device, dtype=utt_scores.dtype)
             utt_target_vec = target_vec.repeat(self.v_submodels)
@@ -608,13 +589,29 @@ class Model(torch_nn.Module):
 
                 target = self._get_con_target(filenames, dev_flag)
 
-            #print utt score in different scale
-            print("Output, %s, %d" % (filenames[0], target[0]) ,end="") 
-            for s_idx in Frame_shifts:
-                print(", %f" % seg_score_scales[f'{s_idx}'][:,1].min(), end="")
-            print(", %f" % utt_scores[:,1])
-
+            # #print utt score in different scale
+            # print("Output, %s, %d" % (filenames[0], target[0]) ,end="") 
+            # for s_idx in Frame_shifts:
+            #     print(", %f" % seg_score_scales[f'{s_idx}'][:,1].min(), end="")
+            # print(", %f" % utt_scores[:,1])
+            for batch_idx in range(len(filenames)):
+                print("Output, %s, %d" % (filenames[batch_idx], target[batch_idx]), end="") 
+                
+                # 計算該檔案在各 scale 的分數
+                for s_idx in Frame_shifts:
+                    # 假設每個檔案的段數相同
+                    segments_per_file = seg_score_scales[f'{s_idx}'].shape[0] // len(filenames)
+                    start_idx = batch_idx * segments_per_file
+                    end_idx = (batch_idx + 1) * segments_per_file
+                    file_scores = seg_score_scales[f'{s_idx}'][start_idx:end_idx, 1]
+                    print(", %f" % file_scores.min(), end="")
+                
+                print(", %f" % utt_scores[batch_idx, 1])
             # don't write output score as a single file
+            # 最終清理
+            del seg_score_scales, utt_scores
+            torch.cuda.empty_cache()
+
             return None
 
     def finish_up_inference(self):

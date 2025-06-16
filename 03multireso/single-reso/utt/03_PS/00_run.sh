@@ -15,9 +15,6 @@ if [ $stage -le 0 ]; then
     fi
 fi
 
-
-
-
 #stage 1:
 if [ $stage -le 1 ]; then
     python main.py --module-model model --model-forward-with-file-name --seed 1 \
@@ -43,13 +40,15 @@ fi
 
 #stage 3
 if [ $stage -le 3 ]; then
-    python main.py --inference --module-model model --model-forward-with-file-name --module-config config_ps.config_test_on_19LAdev  \
-       --temp-flag ${CON_PATH}/segment_labels/dev_seglab_0.01.npy \
+    python main.py --inference --module-model model --model-forward-with-file-name --module-config config_ps.config_test_on_dev  \
        --output-dir ${OUTPUT_DIR}/dev > ${OUTPUT_DIR}/log_output_dev 2>&1 \
-       --data-type asvspoof & 
+       --batch-size 1 \
+       --num-workers 20 \
+       --data-type asvspoof &
 
-    python main.py --inference --module-model model --model-forward-with-file-name  --module-config config_ps.config_test_on_19LAeval\
-       --temp-flag ${CON_PATH}/segment_labels/eval_seglab_0.01.npy \
+    python main.py --inference --module-model model --model-forward-with-file-name  --module-config config_ps.config_test_on_eval\
        --output-dir ${OUTPUT_DIR}/eval > ${OUTPUT_DIR}/log_output_eval 2>&1 \
-       --data-type asvspoof 
+         --batch-size 1 \
+         --num-workers 20 \
+         --data-type asvspoof 
 fi

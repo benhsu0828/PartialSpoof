@@ -16,7 +16,7 @@ if [[ ${metric} == "UttEER"  ]]; then
     python ${PS_PATH}/metric/UtteranceEER.py \
         --pred_file ${pred_DIR}/output/log_output_${dset} \
         --asv_score_file ${ASV_SCORES_FILE} \
-        --utt2label_file ${PS_PATH}/database/protocols/PartialSpoof_LA_cm_protocols/PartialSpoof.LA.cm."$dset".trl.txt
+        --utt2label_file ${PS_PATH}/database/protocols/PartialSpoof_LA_cm_protocols/PS_testprotocal.txt
 fi
 
 if [[ ${metric} == "19UttEER"  ]]; then
@@ -24,7 +24,7 @@ if [[ ${metric} == "19UttEER"  ]]; then
     python ${PS_PATH}/metric/UtteranceEER.py \
         --pred_file ${pred_DIR}/output/log_output_${dset} \
         --asv_score_file ${ASV_SCORES_FILE} \
-        --utt2label_file ${PS_PATH}/database/protocols/ASVspoof2019_LA_cm_protocols/ASVspoof2019.LA.cm."$dset".trl.txt
+        --utt2label_file ${PS_PATH}/database/protocols/ASV19LA_Alltest_processed.txt
 fi
 
 if [[ ${metric} == "5UttEER"  ]]; then
@@ -32,7 +32,8 @@ if [[ ${metric} == "5UttEER"  ]]; then
     python ${PS_PATH}/metric/UtteranceEER_ASVspoof.py \
         --pred_file ${pred_DIR}/output/log_output_${dset} \
         --asv_score_file ${ASV_SCORES_FILE} \
-        --utt2label_file ${PS_PATH}/database/ASVspoof5/ASVspoof5_protocols/ASVspoof5_test_EER.lst
+        --utt2label_file ${PS_PATH}/database/ASVspoof5/ASVspoof5_protocols/ASVspoof5_test_EER.lst \
+        --output_csv result.csv
 fi
 
 #############Point-based Segment-level EER

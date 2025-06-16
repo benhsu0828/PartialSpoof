@@ -44,7 +44,15 @@ def _data_reader(file_path, dim, flag_lang):
     if file_ext == '.wav':
         sr, data = nii_wav_tk.waveReadAsFloat(file_path)
     elif file_ext == '.flac':
-        data, sr = sf.read(file_path)
+        try:
+            data, sr = sf.read(file_path)
+        except Exception as e:
+            print(f"Error reading file: {file_path}")
+            print(f"Error details: {e}")
+            print(f"File exists: {os.path.exists(file_path)}")
+            if os.path.exists(file_path):
+                print(f"File size: {os.path.getsize(file_path)} bytes")
+            raise e
     elif file_ext == '.txt':
         data = nii_text_tk.textloader(file_path, flag_lang)
     else:

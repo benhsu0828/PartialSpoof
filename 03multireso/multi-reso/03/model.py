@@ -49,7 +49,7 @@ Frame_shifts_list= [pow(2, i) for i in np.arange(Scale_num)][SSL_shift:]
 LABEL_SCALE = 1
 Multi_scales=Frame_shifts * Base_step #[0.01, 0.02, 0.04, 0.08, 0.16]
 
-ASVSPOOF_PROTOCAL=PS_PATH+'/project-NN-Pytorch-scripts.202102/project/02-asvspoof/DATA/asvspoof2019_LA/protocol.txt' #protocal of asvspoof2019
+ASVSPOOF_PROTOCAL=PS_PATH+'/database/protocols/PartialSpoof_LA_cm_protocols/PS_testprotocal.txt' #protocal of asvspoof2019
 
 
 hidd_dims ={'wav2vec':512, 'wav2vec2':768, 'hubert':768, 'wav2vec2_xlsr':1024, 'wavlm_base_plus':768, 'wav2vec2_local':1024}

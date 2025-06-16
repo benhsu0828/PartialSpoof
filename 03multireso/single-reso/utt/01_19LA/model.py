@@ -321,50 +321,28 @@ class Model(torch_nn.Module):
         Assume x (batchsize, length, dim)
         Output x (batchsize * number_filter, output_dim)
         """
+        # resample if necessary
+        #x = self.m_resampler(x.squeeze(-1)).unsqueeze(-1)
+        
+        # number of sub models
         batch_size = x.shape[0]
-        
-        # # 檢查輸入長度並進行填充
-        # min_required_frames = 256
-        # min_required_samples = min_required_frames * 320  # 320 = 20ms * 16kHz
-        
-        # # 檢查是否有短音訊需要填充
-        # max_length = max(max(datalength), min_required_samples)
-        # need_padding = any(length < min_required_samples for length in datalength)
-        
-        # if need_padding:
-        #     # print(f"Warning: Short audio detected, applying padding")
-        #     # print(f"Original lengths: {datalength}")
-            
-        #     # 創建新的填充後張量
-        #     if len(x.shape) == 3:  # [batch, length, dim]
-        #         padded_x = torch.zeros(batch_size, max_length, x.shape[2], 
-        #                             device=x.device, dtype=x.dtype)
-        #     else:  # [batch, length]
-        #         padded_x = torch.zeros(batch_size, max_length, 
-        #                             device=x.device, dtype=x.dtype)
-            
-        #     # 複製原始資料到填充後的張量
-        #     for i in range(batch_size):
-        #         original_length = min(datalength[i], x.shape[1])
-        #         if len(x.shape) == 3:
-        #             padded_x[i, :original_length, :] = x[i, :original_length, :]
-        #         else:
-        #             padded_x[i, :original_length] = x[i, :original_length]
-        #         datalength[i] = max_length
-            
-        #     x = padded_x
-        #     # print(f"After padding lengths: {datalength}")
 
-        # # 繼續原本的處理...
-        for idx, (fs, fl, fn, trunc_len, m_trans) in enumerate(
-            zip(self.frame_hops, self.frame_lens, self.fft_n, 
-                self.v_truncate_lens, self.m_transform)):
+        # compute scores for each sub-models
+        for idx, (fs, fl, fn, trunc_len, m_trans ) in \
+            enumerate(
+                zip(self.frame_hops, self.frame_lens, self.fft_n, 
+                    self.v_truncate_lens, self.m_transform)): 
+#                    self.m_before_pooling)):
             
             # extract front-end feature
             x_reps = self._front_end(x, idx, trunc_len, datalength)
 
             # compute scores
+            #  1. unsqueeze to (batch, 1, frame_length, fft_bin)
+            #  2. compute hidden features
             hidden_features_scales = m_trans(x_reps)
+
+
 
         return hidden_features_scales
 
@@ -532,7 +510,6 @@ class Model(torch_nn.Module):
 
             #utt
             utt_scores = self._compute_score(feature_vec)
-
             # target
             target = self._get_con_target(filenames, dev_flag)
             target_vec = torch.tensor(target, 
@@ -571,23 +548,8 @@ class Model(torch_nn.Module):
             seg_score_scales = self._compute_seg_score_scales(seg_feature_scales, filenames)
             for scale, score in seg_score_scales.items():
                 seg_score_scales[f'{scale}'] =  torch.cat(score, dim=0)
-
-            # # 在計算 utt_scores 前檢查
-            # if torch.isnan(feature_vec).any():
-            #     print(f"NaN detected in feature_vec for {filenames}")
-            #     return None
-            # print(feature_vec.shape, filenames)
-            # print("Feature_vec stats: min=%f, max=%f" % (feature_vec.min(), feature_vec.max()))
-
             #utt
             utt_scores = self._compute_score(feature_vec)
-            
-            # print("Utt_scores stats: min=%f, max=%f" % (utt_scores.min(), utt_scores.max()))
-            #  # 檢查結果
-            # if torch.isnan(utt_scores).any():
-            #     print(f"NaN detected in utt_scores for {filenames}")
-            #     print(f"Feature_vec stats: min={feature_vec.min():.6f}, max={feature_vec.max():.6f}")
-            #     return None
 
             if(self.data_type=='asvspoof'):
                 target = self._get_target(filenames)

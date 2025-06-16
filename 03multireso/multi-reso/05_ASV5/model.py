@@ -323,39 +323,6 @@ class Model(torch_nn.Module):
         """
         batch_size = x.shape[0]
         
-        # 檢查輸入長度並進行填充
-        min_required_frames = 256
-        min_required_samples = min_required_frames * 320  # 320 = 20ms * 16kHz
-        
-        # 檢查是否有短音訊需要填充
-        max_length = max(max(datalength), min_required_samples)
-        need_padding = any(length < min_required_samples for length in datalength)
-        
-        if need_padding:
-            # print(f"Warning: Short audio detected, applying padding")
-            # print(f"Original lengths: {datalength}")
-            
-            # 創建新的填充後張量
-            if len(x.shape) == 3:  # [batch, length, dim]
-                padded_x = torch.zeros(batch_size, max_length, x.shape[2], 
-                                    device=x.device, dtype=x.dtype)
-            else:  # [batch, length]
-                padded_x = torch.zeros(batch_size, max_length, 
-                                    device=x.device, dtype=x.dtype)
-            
-            # 複製原始資料到填充後的張量
-            for i in range(batch_size):
-                original_length = min(datalength[i], x.shape[1])
-                if len(x.shape) == 3:
-                    padded_x[i, :original_length, :] = x[i, :original_length, :]
-                else:
-                    padded_x[i, :original_length] = x[i, :original_length]
-                datalength[i] = max_length
-            
-            x = padded_x
-            # print(f"After padding lengths: {datalength}")
-
-        # 繼續原本的處理...
         for idx, (fs, fl, fn, trunc_len, m_trans) in enumerate(
             zip(self.frame_hops, self.frame_lens, self.fft_n, 
                 self.v_truncate_lens, self.m_transform)):

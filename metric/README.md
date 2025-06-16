@@ -57,7 +57,7 @@ Below are instruction for each type of EER within `cal_EER.sh`
 
 ```shell
 bash <Path_to_PartialSpoof>/metric/cal_EER.sh multi-reso/exp-01 UttEER dev
-bash /home/ben/PartialSpoof/metric/cal_EER.sh /home/ben/PartialSpoof/03multireso/multi-reso/01 UttEER dev
+bash /home/ben/PartialSpoof/metric/cal_EER.sh /home/ben/PartialSpoof/03multireso/multi-reso/03 UttEER dev
 # Input is multi-reso/exp-01/log_output_dev, which has utt scores from all score branshes: [S_1, ..., S_K] as in model.py:573
 # Output all EER and threshold vectors
 # For example [EER_1, ..., EER_k, ..., EER_K, EER_{utt}], where EER_m is the k-th score branch.
@@ -78,7 +78,9 @@ But I personally do not recommend using t-DCF, because Partial Spoof is designed
 bash /home/ben/PartialSpoof/metric/cal_EER.sh /home/ben/PartialSpoof/03multireso/multi-reso/04_19LA 19UttEER dev
 
 # ASVspoof 5 EER
-bash /home/ben/PartialSpoof/metric/cal_EER.sh /home/ben/PartialSpoof/03multireso/multi-reso/05_ASV5 5UttEER dev
+bash /home/ben/PartialSpoof/metric/cal_EER.sh /home/ben/PartialSpoof/03multireso/multi-reso/06_ASV5_tune 5UttEER dev
+bash /home/ben/PartialSpoof/metric/cal_EER.sh /home/ben/PartialSpoof/03multireso/single-reso/utt/02_ASV5 5UttEER dev
+
 
 ### Range-based EER (for spoof localization)
 

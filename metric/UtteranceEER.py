@@ -62,11 +62,11 @@ def parse_txt(file_path, col):
     # 加入除錯資訊
     print(f"\nDEBUG Col {col}:")
     print(f"  Bonafide count: {len(bonafide)}, Spoof count: {len(spoofed)}")
-    print(f"  Bonafide: min={bonafide.min():.4f}, max={bonafide.max():.4f}, mean={bonafide.mean():.4f}")
-    print(f"  Spoof: min={spoofed.min():.4f}, max={spoofed.max():.4f}, mean={spoofed.mean():.4f}")
-    print(f"  Expected: bonafide > spoof for good performance")
-    if bonafide.mean() < spoofed.mean():
-        print(f"  ⚠️  WARNING: Bonafide scores < Spoof scores (may need to flip)")
+    # print(f"  Bonafide: min={bonafide.min():.4f}, max={bonafide.max():.4f}, mean={bonafide.mean():.4f}")
+    # print(f"  Spoof: min={spoofed.min():.4f}, max={spoofed.max():.4f}, mean={spoofed.mean():.4f}")
+    # print(f"  Expected: bonafide > spoof for good performance")
+    # if bonafide.mean() < spoofed.mean():
+    #     print(f"  ⚠️  WARNING: Bonafide scores < Spoof scores (may need to flip)")
     #####
 
     return bonafide, spoofed
@@ -81,24 +81,6 @@ if __name__ == "__main__":
             sep='\s+',index_col =False, header=None,
             names=['type', 'label', 'score'])
     
-    # 自動映射常見的類型名稱
-    # type_mapping = {
-    #     'A01': 'spoof',
-    #     'A02': 'spoof',
-    #     'A03': 'spoof',
-    #     'A04': 'spoof',
-    #     'A05': 'spoof',
-    #     'A06': 'spoof',
-    # }
-    # label_mapping = {
-    #     'bonafide': 'bonafide',
-    #     'target': 'target',
-    #     'nontarget': 'nontarget',
-    #     'spoof': 'target',  # 將 'spoof' 映射為 'target'
-    # }
-    # 應用映射
-    # trials['type'] = trials['type'].replace(type_mapping)
-    # trials['label'] = trials['label'].replace(label_mapping)
     print(f"DEBUG: Total ASV records: {len(trials)}")
     print(f"DEBUG: Unique types: {trials['type'].unique()}")
     print(f"DEBUG: Unique labels: {trials['label'].unique()}")

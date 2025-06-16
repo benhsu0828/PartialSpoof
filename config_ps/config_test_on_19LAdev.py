@@ -78,7 +78,8 @@ truncate_seq = None
 # Minimum sequence length
 #  If sequence length < minimum_len, this sequence is not used for training
 #  minimum_len can be None
-minimum_len = None
+# minimum_len = None
+minimum_len = 8000
 # # 設定最小音訊長度（以採樣點為單位）
 # minimum_len = 16000 * 3  # 最少 3 秒（假設 16kHz 採樣率）
     

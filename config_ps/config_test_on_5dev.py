@@ -29,14 +29,14 @@ CON_DATA_PATH = '/home/ben/PartialSpoof/database/'
 
 # File lists (text file, one data name per line, without name extension)
 # trin_file_list: list of files for training set
-trn_list = CON_DATA_PATH + '/train/train.lst'  
+trn_list = CON_DATA_PATH + '/ASVspoof5/ASVspoof5_train/ASVspoof5_train.lst'  
 # val_file_list: list of files for validation set. It can be None
 val_list = CON_DATA_PATH + '/ASVspoof5/ASVspoof5_dev/ASVspoof5_dev.lst'  
 
 # Directories for input features
 # input_dirs = [path_of_feature_1, path_of_feature_2, ..., ]
 #  fro con, train and validation data are not in the same sub-directory
-trn_input_dirs = [CON_DATA_PATH + '/train/con_wav/']
+trn_input_dirs = [CON_DATA_PATH + '/ASVspoof5/ASVspoof5_train/flac_T/']
 val_input_dirs = [CON_DATA_PATH + '/ASVspoof5/ASVspoof5_dev/flac_D/']
 
 # Dimensions of input features
@@ -78,9 +78,9 @@ truncate_seq = None
 # Minimum sequence length
 #  If sequence length < minimum_len, this sequence is not used for training
 #  minimum_len can be None
-minimum_len = None
-# # 設定最小音訊長度（以採樣點為單位）
-# minimum_len = 16000 * 3  # 最少 3 秒（假設 16kHz 採樣率）
+minimum_len = 8000 * 1  # 最少 0.5 秒（假設 16kHz 採樣率）
+
+
     
 
 # Optional argument
@@ -95,7 +95,7 @@ minimum_len = None
 
 set_type='ASVspoof5_dev'  # 'ASVspoof5_dev' or 'ASVspoof5_eval'
 test_input_path = CON_DATA_PATH + 'ASVspoof5/' + set_type
-test_set_name = 'ASV5_' + set_type 
+test_set_name = set_type 
 #test_minimum_len = 160*16 #already modified in model_debug.py
 
 # List of test set data
