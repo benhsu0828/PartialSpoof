@@ -19,25 +19,25 @@ exp_path='exp/'
 # Name of datasets
 #  after data preparation, trn/val_set_name are used to save statistics 
 #  about the data sets
-trn_set_name = 'PS_trn'
-val_set_name = 'PS_val'
+trn_set_name = '5_trn'
+val_set_name = '5_dev'
 
 # for convenience
 
 CON_DATA_PATH = '/home/ben/PartialSpoof/database/'
-#CON_DATA_PATH = '/path/to/data' TODO
+#CON_DATA_PATH = '/path/to/data'
 
 # File lists (text file, one data name per line, without name extension)
 # trin_file_list: list of files for training set
-trn_list = CON_DATA_PATH + '/train/train.lst'  
+trn_list = CON_DATA_PATH + '/ASVspoof5/ASVspoof5_train/ASVspoof5_train.lst'  
 # val_file_list: list of files for validation set. It can be None
-val_list = CON_DATA_PATH + '/dev/dev.lst'  
+val_list = CON_DATA_PATH + '/ASVspoof5/ASVspoof5_dev/ASVspoof5_dev.lst'  
 
 # Directories for input features
 # input_dirs = [path_of_feature_1, path_of_feature_2, ..., ]
 #  fro con, train and validation data are not in the same sub-directory
-trn_input_dirs = [CON_DATA_PATH + '/train/con_wav/']
-val_input_dirs = [CON_DATA_PATH + '/dev/con_wav/']
+trn_input_dirs = [CON_DATA_PATH + '/ASVspoof5/ASVspoof5_train/flac_T/']
+val_input_dirs = [CON_DATA_PATH + '/ASVspoof5/ASVspoof5_dev/flac_D/']
 
 # Dimensions of input features
 # input_dims = [dimension_of_feature_1, dimension_of_feature_2, ...]
@@ -46,7 +46,7 @@ input_dims = [1]
 # File name extension for input features
 # input_exts = [name_extention_of_feature_1, ...]
 # Please put ".f0" as the last feature
-input_exts = ['.wav']
+input_exts = ['.flac']
 
 # Temporal resolution for input features
 # input_reso = [reso_feature_1, reso_feature_2, ...]
@@ -78,7 +78,9 @@ truncate_seq = None
 # Minimum sequence length
 #  If sequence length < minimum_len, this sequence is not used for training
 #  minimum_len can be None
-minimum_len = None
+minimum_len = 8000 * 1  # 最少 0.5 秒（假設 16kHz 採樣率）
+
+
     
 
 # Optional argument
@@ -91,9 +93,9 @@ minimum_len = None
 #########################################################
 # similar options to training stage
 
-set_type='eval'
-test_input_path = CON_DATA_PATH + set_type
-test_set_name = 'PS_' + set_type 
+set_type='ASVspoof5_dev'  # 'ASVspoof5_dev' or 'ASVspoof5_eval'
+test_input_path = CON_DATA_PATH + 'ASVspoof5/' + set_type
+test_set_name = set_type 
 #test_minimum_len = 160*16 #already modified in model_debug.py
 
 # List of test set data
@@ -104,7 +106,7 @@ test_list = test_input_path + '/'+set_type+'.lst'
 # Directories for input features
 # input_dirs = [path_of_feature_1, path_of_feature_2, ..., ]
 #  we assume train and validation data are put in the same sub-directory
-test_input_dirs = [test_input_path + '/con_wav/']
+test_input_dirs = [test_input_path + '/flac_D/']
 
 # Directories for output features, which are []
 test_output_dirs = []

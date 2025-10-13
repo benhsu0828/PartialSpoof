@@ -26,6 +26,7 @@ parser.add_argument('--utt2label_file',type=str, default='../../../database/ASVs
         # ZhangLin: But I personally do not recommend using t-DCF, because Partial Spoof is designed 
         # not only for ASVspoof, which aims to deceive machines, 
         # but also for DeepFake, which is intended to fool humans.
+parser.add_argument('--output_csv',type=str, default='', help='Output CSV file path (optional)') 
 args = parser.parse_args()
 
 
@@ -35,7 +36,47 @@ print_mean = True #whetehr print mean of EERs for all random seeds
 print_each = True #whetehr print each EER for all random seeds 
 SCORE_TYPE='min'
 utt2label=dict([ [line.split()[1].strip(), (line.split()[4]).strip()] for line in open(args.utt2label_file) ])
+print(f"DEBUG: Loaded {len(utt2label)} utterances from {args.utt2label_file}")
 
+# 輸出 utt2label 到 CSV
+def save_utt2label_to_csv():
+    """將 utt2label 字典保存為 CSV 檔案"""
+    
+    # 準備資料
+    data = []
+    for filename, label in utt2label.items():
+        data.append({
+            'filename': filename,
+            'label': label
+        })
+    
+    # 建立 DataFrame
+    df = pd.DataFrame(data)
+    
+    # 決定輸出檔案路徑
+    if args.output_csv:
+        csv_file = args.output_csv
+    else:
+        # 根據 pred_file 自動生成檔名
+        base_name = os.path.splitext(os.path.basename("./check"))[0]
+        csv_file = f"{base_name}_utt2label.csv"
+    
+    # 確保輸出目錄存在
+    output_dir = os.path.dirname(csv_file)
+    if output_dir and not os.path.exists(output_dir):
+        os.makedirs(output_dir, exist_ok=True)
+    
+    # 保存 CSV
+    df.to_csv(csv_file, index=False)
+    print(f"✅ Saved utt2label to: {csv_file}")
+    print(f"📊 Total entries: {len(df)}")
+    print(f"📈 Label distribution:")
+    print(df['label'].value_counts().to_string())
+    
+    return csv_file
+
+# 保存 utt2label
+# utt2label_csv = save_utt2label_to_csv()
 
 scale_num = 7
 MAX_col = scale_num + 3  #9 3+6
@@ -60,13 +101,13 @@ def parse_txt(file_path, col):
 
     #####
     # 加入除錯資訊
-    print(f"\nDEBUG Col {col}:")
+    # print(f"\nDEBUG Col {col}:")
     print(f"  Bonafide count: {len(bonafide)}, Spoof count: {len(spoofed)}")
     # print(f"  Bonafide: min={bonafide.min():.4f}, max={bonafide.max():.4f}, mean={bonafide.mean():.4f}")
     # print(f"  Spoof: min={spoofed.min():.4f}, max={spoofed.max():.4f}, mean={spoofed.mean():.4f}")
     # print(f"  Expected: bonafide > spoof for good performance")
-    # if bonafide.mean() < spoofed.mean():
-    #     print(f"  ⚠️  WARNING: Bonafide scores < Spoof scores (may need to flip)")
+    if bonafide.mean() < spoofed.mean():
+        print(f"  ⚠️  WARNING: Bonafide scores < Spoof scores (may need to flip)")
     #####
 
     return bonafide, spoofed
@@ -77,19 +118,6 @@ if __name__ == "__main__":
 
     # print(f"DEBUG: Reading ASV file: {args.asv_score_file}")
 
-    trials=pd.read_csv(args.asv_score_file, on_bad_lines='skip',
-            sep='\s+',index_col =False, header=None,
-            names=['type', 'label', 'score'])
-    
-    print(f"DEBUG: Total ASV records: {len(trials)}")
-    print(f"DEBUG: Unique types: {trials['type'].unique()}")
-    print(f"DEBUG: Unique labels: {trials['label'].unique()}")
-
-    tar_asv = np.array(trials.loc[trials['label']=='target']['score'], dtype=float)
-    non_asv = np.array(trials.loc[(trials['label']=='nontarget')&(trials['type']=='bonafide')]['score'], dtype=float)
-    spoof_asv_pd=trials.loc[(trials['label']=='nontarget')&(trials['type']=='spoof')]
-    spoof_asv = np.array(spoof_asv_pd['score'], dtype=float)
-
     print(args.pred_file)
     mintDCF_oneseed_cols = []
     eer_oneseed_cols = []
@@ -97,8 +125,7 @@ if __name__ == "__main__":
 
     for col in np.arange(3, MAX_col):
         bonafide, spoofed = parse_txt(args.pred_file, col)
-        
-        # mintDCF, eer, threshold = eval_asvspoof.tDCF_wrapper(bonafide, spoofed, tar_asv, non_asv, spoof_asv)
+
         # 只計算 EER
         eer, threshold = eval_asvspoof.compute_eer(bonafide, spoofed)
         mintDCF = 0.0  # 設定為預設值

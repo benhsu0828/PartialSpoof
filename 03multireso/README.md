@@ -1,4 +1,4 @@
-# PartialSpoof/03multireso
+s# PartialSpoof/03multireso
 
 This is the implementation for paper:
 
@@ -34,6 +34,42 @@ Please cite database and this paper if you use:
   
   `ln -s <path_to_s3prl> ../modules/s3prl`
   
+  ```
+  pip install --upgrade pip==21.3.1
+  pip install omegaconf==2.0.6 hydra-core==1.0.7
+  pip install fairseq==0.12.2
+  pip install tensorboard
+
+  # 安裝特定版本的 numpy
+  pip install "numpy==1.20.0"
+
+  # 安裝相容版本的 Pillow
+  pip install "Pillow==8.2.0"
+
+  # 安裝相容版本的 transformers
+  pip install "transformers==4.18.0"
+
+  pip install "numpy==1.20.3"
+
+  # pip install pyRLE
+  pip install pylibjpeg-rle
+  ```
+  # 將訓練資料匯出成.lst
+  find /home/ben/PartialSpoof/database/ASVspoof5/ASVspoof5_train/flac_T -name "*.flac" -exec basename {} .flac \; > /home/ben/PartialSpoof/database/ASVspoof5/ASVspoof5_train/ASVspoof5_train.lst
+ 
+  # 如果要test on ASVspoof5 要先將dev和eval的 protocol 合併起來再更改model檔給定的路徑
+  直接ctrl c ctrl v貼再一起就好
+
+  mkdir -p flac_T
+
+  # 解壓縮所有 .tar.gz 檔案到 flac_T
+  for file in *.tar*; do
+      echo "正在解壓縮: $file"
+      tar -xaf "$file" -C flac_D/ --strip-components=1
+  done
+
+
+
   * Option 2. Otherwise, please download s3prl through submodule. 
   
   ```shell

@@ -28,6 +28,8 @@ import core_scripts.math_tools.stats as nii_stats
 import core_scripts.data_io.customize_collate_fn as nii_collate_fn
 import core_scripts.data_io.customize_sampler as nii_sampler_fn
 
+import soundfile as sf
+
 __author__ = "Xin Wang"
 __email__ = "wangxin@nii.ac.jp"
 __copyright__ = "Copyright 2020, Xin Wang"
@@ -41,6 +43,16 @@ def _data_reader(file_path, dim, flag_lang):
     file_name, file_ext = os.path.splitext(file_path)
     if file_ext == '.wav':
         sr, data = nii_wav_tk.waveReadAsFloat(file_path)
+    elif file_ext == '.flac':
+        try:
+            data, sr = sf.read(file_path)
+        except Exception as e:
+            print(f"Error reading file: {file_path}")
+            print(f"Error details: {e}")
+            print(f"File exists: {os.path.exists(file_path)}")
+            if os.path.exists(file_path):
+                print(f"File size: {os.path.getsize(file_path)} bytes")
+            raise e
     elif file_ext == '.txt':
         data = nii_text_tk.textloader(file_path, flag_lang)
     else:

@@ -15,7 +15,14 @@ import sys
 import torch
 import re
 
-from torch._six import string_classes
+#from torch._six import string_classes
+string_classes = str
+if not isinstance(string_classes, tuple):
+    string_classes = (string_classes,)
+
+int_classes = int
+if not isinstance(int_classes, tuple):
+    int_classes = (int_classes,)
 
 TORCH_MAJOR = int(torch.__version__.split('.')[0])
 TORCH_MINOR = int(torch.__version__.split('.')[1])
